@@ -83,10 +83,10 @@ body {
 /* Hero section CSS */
 
 .hero-div {
-  /* Light teal background color */
   font-size: 15rem;
   overflow: hidden;
   height: 100vh;
+  cursor: none;
 }
 
 .hero-text {
