@@ -54,7 +54,10 @@ function App() {
   return (
     <ReactLenis root>
       <Navbar></Navbar>
-      <Hero></Hero>
+      <Hero
+        onPointerEnter={textEnter}
+        onPointerLeave={textLeave}
+      ></Hero>
       <Skills></Skills>
       <Projects
         onPointerEnter={textEnter}

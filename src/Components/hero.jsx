@@ -2,9 +2,8 @@ import React, { useRef, useEffect } from "react";
 import gsap from "gsap";
 import SplitType from "split-type";
 import "../App.css";
-const Hero = (props) => {
-  const isHovering = useRef(false); // to track true enter/leave
 
+const Hero = (props) => {
   useEffect(() => {
     const text = new SplitType(".stagger-text", { types: "chars" });
     let chars = text.chars;
@@ -30,7 +29,11 @@ const Hero = (props) => {
 
   return (
     <div className="hero-div">
-      <div className="hero-text">
+      <div 
+        className="hero-text"
+        onPointerEnter={() => props.onPointerEnter("cursor-hero")}
+        onPointerLeave={props.onPointerLeave}
+      >
         <div className="stagger-text hero-text-1">Hey I'm</div>
         <div className="stagger-text hero-text-2">Jashit</div>
         <div className="stagger-text hero-text-3">Jashit</div>
