@@ -1,8 +1,10 @@
-import React, { useEffect } from "react";
+import React, { useRef, useEffect } from "react";
 import gsap from "gsap";
 import SplitType from "split-type";
 import "../App.css";
-const Hero = () => {
+const Hero = (props) => {
+  const isHovering = useRef(false); // to track true enter/leave
+
   useEffect(() => {
     const text = new SplitType(".stagger-text", { types: "chars" });
     let chars = text.chars;

@@ -1,10 +1,18 @@
 import "../App.css";
-function Projects() {
+function Projects(props) {
   return (
     <div className="projects-div">
       <h1 className="projects-heading">Projects</h1>
       <div className="project-grid">
-        <div className="project-card">
+        <div
+          className="project-card"
+          onPointerEnter={props.onPointerEnter}
+          // onPointerLeave={() => {
+          //   // console.log("Left");
+          // }}
+          onPointerLeave={props.onPointerLeave}
+          onPointerMove={null}
+        >
           <div className="top-bar">
             <span className="dot red"></span>
             <span className="dot yellow"></span>
