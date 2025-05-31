@@ -4,7 +4,7 @@ import Navbar from "./Components/navbar.jsx";
 import Projects from "./Components/projects.jsx";
 import AboutMe from "./Components/aboutme.jsx";
 import Skills from "./Components/skills.jsx";
-import { ReactLenis, useLenis } from "lenis/react";
+import { ReactLenis } from "lenis/react";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 
@@ -27,7 +27,7 @@ function App() {
 
     window.addEventListener("mousemove", mousemove);
 
-    return window.addEventListener("mousemove", mousemove);
+    return () => window.removeEventListener("mousemove", mousemove);
   }, []);
 
   const variants = {
@@ -44,27 +44,20 @@ function App() {
   };
 
   const textEnter = (cursor) => {
-    // setCursorVariant("text");
     setCustomCursor(cursor);
-    console.log("entered");
   };
 
   const textLeave = () => {
-    // setCursorVariant("default");
     setCustomCursor("cursor");
-    console.log("left");
   };
 
   return (
     <ReactLenis root>
       <Navbar></Navbar>
-      <Hero
-      // onPointerEnter={() => textEnter("cursor-hero")}
-      // onPointerLeave={textLeave}
-      ></Hero>
+      <Hero></Hero>
       <Skills></Skills>
       <Projects
-        onPointerEnter={() => textEnter("cursor-skills")}
+        onPointerEnter={textEnter}
         onPointerLeave={textLeave}
       ></Projects>
       <AboutMe></AboutMe>
@@ -72,7 +65,9 @@ function App() {
         className={customCursor}
         variants={variants}
         animate={cursorVariant}
-      ></motion.div>
+      >
+        {customCursor === "cursor-project" && "Go to Project"}
+      </motion.div>
     </ReactLenis>
   );
 }
