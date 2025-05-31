@@ -389,7 +389,7 @@ body {
   top: 0;
   left: 0;
   pointer-events: none;
-  transition: all 0.15s ease; /* Reduced transition time */
+  transition: width 0.2s ease, height 0.2s ease;
   z-index: 1000;
 }
 
@@ -403,7 +403,7 @@ body {
   top: 0;
   left: 0;
   pointer-events: none;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); /* Faster transition */
+  transition: width 0.2s ease, height 0.2s ease;
   z-index: 1000;
 }
 
@@ -422,7 +422,7 @@ body {
   font-size: 12px;
   text-align: center;
   pointer-events: none;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); /* Faster transition */
+  transition: width 0.2s ease, height 0.2s ease;
   z-index: 1000;
 }
 
