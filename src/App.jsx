@@ -15,8 +15,8 @@ function App() {
     y: 0,
   });
 
-  const cursorX = useSpring(0, { damping: 25, stiffness: 150 });
-  const cursorY = useSpring(0, { damping: 25, stiffness: 150 });
+  const cursorX = useSpring(0, { damping: 15, stiffness: 300 }); // Increased stiffness and reduced damping
+  const cursorY = useSpring(0, { damping: 15, stiffness: 300 }); // for faster movement
 
   const [customCursor, setCustomCursor] = useState("cursor");
 
@@ -46,12 +46,12 @@ function App() {
         onPointerEnter={() => textEnter("cursor-hero")}
         onPointerLeave={textLeave}
       />
-      <TechStack />
       <Skills />
       <Projects
         onPointerEnter={() => textEnter("cursor-project")}
         onPointerLeave={textLeave}
       />
+      <TechStack />
       <AboutMe />
       <motion.div
         className={customCursor}
@@ -66,4 +66,4 @@ function App() {
   );
 }
 
-export default App
+export default App;
