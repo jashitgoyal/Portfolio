@@ -389,7 +389,7 @@ body {
   top: 0;
   left: 0;
   pointer-events: none;
-  transition: all 0.3s ease;
+  transition: all 0.15s ease; /* Reduced transition time */
   z-index: 1000;
 }
 
@@ -403,7 +403,7 @@ body {
   top: 0;
   left: 0;
   pointer-events: none;
-  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); /* Faster transition */
   z-index: 1000;
 }
 
@@ -422,7 +422,7 @@ body {
   font-size: 12px;
   text-align: center;
   pointer-events: none;
-  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); /* Faster transition */
   z-index: 1000;
 }
 
@@ -432,6 +432,8 @@ body {
   width: 200px;
   height: 200px;
   margin: 100px auto;
+  padding: 50px 0;
+  background: var(--background-color);
 }
 
 .cube {

@@ -15,8 +15,8 @@ function App() {
     y: 0,
   });
 
-  const cursorX = useSpring(0, { damping: 15, stiffness: 300 }); // Increased stiffness and reduced damping
-  const cursorY = useSpring(0, { damping: 15, stiffness: 300 }); // for faster movement
+  const cursorX = useSpring(0, { damping: 10, stiffness: 500 }); // Increased stiffness even more
+  const cursorY = useSpring(0, { damping: 10, stiffness: 500 }); // Reduced damping for snappier response
 
   const [customCursor, setCustomCursor] = useState("cursor");
 
