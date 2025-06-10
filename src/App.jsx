@@ -4,7 +4,6 @@ import Navbar from "./Components/navbar.jsx";
 import Projects from "./Components/projects.jsx";
 import AboutMe from "./Components/aboutme.jsx";
 import Skills from "./Components/skills.jsx";
-import StatsCounter from "./Components/StatsCounter.jsx";
 import Timeline from "./Components/Timeline.jsx";
 import TestimonialCarousel from "./Components/TestimonialCarousel.jsx";
 import ContactForm from "./Components/ContactForm.jsx";
@@ -61,7 +60,6 @@ function App() {
         onPointerLeave={textLeave}
       />
       <Skills />
-      <StatsCounter />
       <Projects
         onPointerEnter={() => textEnter("cursor-project")}
         onPointerLeave={textLeave}
