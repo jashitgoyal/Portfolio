@@ -1,145 +1,107 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useDragControls } from 'framer-motion';
 import { AnimatedButton } from './MicroInteractions';
 import TextReveal from './TextReveal';
 
-const gameQuestions = [
+const skillsData = [
+  // Frontend
+  { id: 1, name: 'JavaScript', category: 'Frontend', color: '#F7DF1E', icon: '🟨' },
+  { id: 2, name: 'React', category: 'Frontend', color: '#61DAFB', icon: '⚛️' },
+  { id: 3, name: 'CSS', category: 'Frontend', color: '#1572B6', icon: '🎨' },
+  { id: 4, name: 'HTML', category: 'Frontend', color: '#E34F26', icon: '📄' },
+  
+  // Backend
+  { id: 5, name: 'Node.js', category: 'Backend', color: '#68A063', icon: '🟢' },
+  { id: 6, name: 'Python', category: 'Backend', color: '#306998', icon: '🐍' },
+  { id: 7, name: 'Java', category: 'Backend', color: '#ED8B00', icon: '☕' },
+  { id: 8, name: 'Spring Boot', category: 'Backend', color: '#6DB33F', icon: '🍃' },
+  
+  // DevOps
+  { id: 9, name: 'Docker', category: 'DevOps', color: '#2496ED', icon: '🐳' },
+  { id: 10, name: 'AWS', category: 'DevOps', color: '#FF9900', icon: '☁️' },
+  { id: 11, name: 'Jenkins', category: 'DevOps', color: '#D33833', icon: '🔧' },
+  { id: 12, name: 'Git', category: 'DevOps', color: '#F05032', icon: '📚' },
+  
+  // Database
+  { id: 13, name: 'MongoDB', category: 'Database', color: '#47A248', icon: '🍃' },
+  { id: 14, name: 'MySQL', category: 'Database', color: '#4479A1', icon: '🗄️' },
+  { id: 15, name: 'PostgreSQL', category: 'Database', color: '#336791', icon: '🐘' },
+];
+
+const categories = [
+  { name: 'Frontend', color: '#FF6B6B', description: 'User Interface & Experience' },
+  { name: 'Backend', color: '#4ECDC4', description: 'Server & Logic' },
+  { name: 'DevOps', color: '#45B7D1', description: 'Deployment & Infrastructure' },
+  { name: 'Database', color: '#96CEB4', description: 'Data Management' },
+];
+
+const challenges = [
   {
     id: 1,
-    skill: 'JavaScript',
-    question: 'What will this code output?',
-    code: `console.log(typeof null);`,
-    options: ['null', 'undefined', 'object', 'boolean'],
-    correct: 2,
-    explanation: 'typeof null returns "object" - this is a known quirk in JavaScript!'
+    title: "Build a Full-Stack App",
+    description: "Drag the technologies you'd use to build a complete web application",
+    requiredCategories: ['Frontend', 'Backend', 'Database'],
+    minSkills: 6,
+    bonus: "Add DevOps tools for extra points!"
   },
   {
     id: 2,
-    skill: 'React',
-    question: 'Which hook is used for side effects?',
-    code: `function Component() {
-  // Which hook goes here?
-  return <div>Hello</div>;
-}`,
-    options: ['useState', 'useEffect', 'useContext', 'useReducer'],
-    correct: 1,
-    explanation: 'useEffect is used for side effects like API calls, subscriptions, etc.'
+    title: "Modern Web Development",
+    description: "Show your frontend expertise",
+    requiredCategories: ['Frontend'],
+    minSkills: 3,
+    bonus: "Include CSS frameworks and build tools!"
   },
   {
     id: 3,
-    skill: 'CSS',
-    question: 'How to center a div both horizontally and vertically?',
-    code: `.container {
-  display: flex;
-  /* What properties? */
-}`,
-    options: [
-      'text-align: center',
-      'justify-content: center; align-items: center',
-      'margin: auto',
-      'position: absolute'
-    ],
-    correct: 1,
-    explanation: 'Flexbox with justify-content and align-items centers both ways!'
-  },
-  {
-    id: 4,
-    skill: 'Node.js',
-    question: 'What does this Express middleware do?',
-    code: `app.use(express.json());`,
-    options: [
-      'Serves static files',
-      'Parses JSON request bodies',
-      'Handles errors',
-      'Sets up routing'
-    ],
-    correct: 1,
-    explanation: 'express.json() parses incoming JSON request bodies!'
-  },
-  {
-    id: 5,
-    skill: 'Python',
-    question: 'What will this list comprehension create?',
-    code: `result = [x**2 for x in range(5)]`,
-    options: [
-      '[0, 1, 2, 3, 4]',
-      '[0, 1, 4, 9, 16]',
-      '[1, 4, 9, 16, 25]',
-      '[2, 4, 6, 8, 10]'
-    ],
-    correct: 1,
-    explanation: 'Squares of numbers 0-4: [0², 1², 2², 3², 4²] = [0, 1, 4, 9, 16]'
+    title: "Cloud & DevOps Pipeline",
+    description: "Demonstrate your deployment knowledge",
+    requiredCategories: ['DevOps'],
+    minSkills: 3,
+    bonus: "Include containerization and CI/CD!"
   }
 ];
 
 const SkillsGame = () => {
-  const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [score, setScore] = useState(0);
-  const [selectedAnswer, setSelectedAnswer] = useState(null);
-  const [showExplanation, setShowExplanation] = useState(false);
-  const [gameComplete, setGameComplete] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(30);
   const [gameStarted, setGameStarted] = useState(false);
-  const [streak, setStreak] = useState(0);
+  const [currentChallenge, setCurrentChallenge] = useState(0);
+  const [selectedSkills, setSelectedSkills] = useState([]);
+  const [availableSkills, setAvailableSkills] = useState(skillsData);
+  const [score, setScore] = useState(0);
+  const [gameComplete, setGameComplete] = useState(false);
+  const [showFeedback, setShowFeedback] = useState(false);
   const [particles, setParticles] = useState([]);
   
-  const timerRef = useRef(null);
-  const gameRef = useRef(null);
-
-  useEffect(() => {
-    if (gameStarted && !gameComplete && !showExplanation) {
-      timerRef.current = setInterval(() => {
-        setTimeLeft(prev => {
-          if (prev <= 1) {
-            handleTimeUp();
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    }
-    
-    return () => clearInterval(timerRef.current);
-  }, [gameStarted, gameComplete, showExplanation, currentQuestion]);
-
-  const handleTimeUp = () => {
-    setSelectedAnswer(-1);
-    setShowExplanation(true);
-    setStreak(0);
-    clearInterval(timerRef.current);
-  };
+  const dropZoneRef = useRef(null);
 
   const startGame = () => {
     setGameStarted(true);
-    setCurrentQuestion(0);
+    setCurrentChallenge(0);
+    setSelectedSkills([]);
+    setAvailableSkills(skillsData);
     setScore(0);
-    setStreak(0);
     setGameComplete(false);
-    setTimeLeft(30);
+    setShowFeedback(false);
   };
 
-  const handleAnswerSelect = (answerIndex) => {
-    if (selectedAnswer !== null) return;
+  const handleDrop = (skill) => {
+    if (selectedSkills.find(s => s.id === skill.id)) return;
     
-    setSelectedAnswer(answerIndex);
-    clearInterval(timerRef.current);
-    
-    const isCorrect = answerIndex === gameQuestions[currentQuestion].correct;
-    
-    if (isCorrect) {
-      const points = Math.max(10, timeLeft);
-      setScore(prev => prev + points);
-      setStreak(prev => prev + 1);
-      createParticles();
-    } else {
-      setStreak(0);
+    setSelectedSkills(prev => [...prev, skill]);
+    setAvailableSkills(prev => prev.filter(s => s.id !== skill.id));
+    createParticles();
+  };
+
+  const removeSkill = (skillId) => {
+    const skill = selectedSkills.find(s => s.id === skillId);
+    if (skill) {
+      setSelectedSkills(prev => prev.filter(s => s.id !== skillId));
+      setAvailableSkills(prev => [...prev, skill].sort((a, b) => a.id - b.id));
     }
-    
-    setShowExplanation(true);
   };
 
   const createParticles = () => {
-    const newParticles = Array.from({ length: 10 }, (_, i) => ({
+    const newParticles = Array.from({ length: 8 }, (_, i) => ({
       id: Date.now() + i,
       x: Math.random() * 100,
       y: Math.random() * 100,
@@ -148,12 +110,75 @@ const SkillsGame = () => {
     setTimeout(() => setParticles([]), 1000);
   };
 
-  const nextQuestion = () => {
-    if (currentQuestion < gameQuestions.length - 1) {
-      setCurrentQuestion(prev => prev + 1);
-      setSelectedAnswer(null);
-      setShowExplanation(false);
-      setTimeLeft(30);
+  const evaluateChallenge = () => {
+    const challenge = challenges[currentChallenge];
+    let points = 0;
+    let feedback = [];
+
+    // Check required categories
+    const selectedCategories = [...new Set(selectedSkills.map(s => s.category))];
+    const hasRequiredCategories = challenge.requiredCategories.every(cat => 
+      selectedCategories.includes(cat)
+    );
+
+    if (hasRequiredCategories) {
+      points += 50;
+      feedback.push("✅ Great! You included all required technology categories!");
+    } else {
+      feedback.push("❌ Missing some required categories. Try adding more diverse skills!");
+    }
+
+    // Check minimum skills
+    if (selectedSkills.length >= challenge.minSkills) {
+      points += 30;
+      feedback.push(`✅ Perfect! You selected ${selectedSkills.length} technologies!`);
+    } else {
+      feedback.push(`❌ Need at least ${challenge.minSkills} skills for this challenge.`);
+    }
+
+    // Bonus points for good combinations
+    const frontendSkills = selectedSkills.filter(s => s.category === 'Frontend').length;
+    const backendSkills = selectedSkills.filter(s => s.category === 'Backend').length;
+    const devopsSkills = selectedSkills.filter(s => s.category === 'DevOps').length;
+    const dbSkills = selectedSkills.filter(s => s.category === 'Database').length;
+
+    if (frontendSkills >= 2 && backendSkills >= 2) {
+      points += 20;
+      feedback.push("🎉 Bonus: Great full-stack combination!");
+    }
+
+    if (devopsSkills >= 2) {
+      points += 15;
+      feedback.push("🚀 Bonus: Excellent DevOps knowledge!");
+    }
+
+    // Check for modern tech stack
+    const hasReact = selectedSkills.some(s => s.name === 'React');
+    const hasNodeJS = selectedSkills.some(s => s.name === 'Node.js');
+    const hasDocker = selectedSkills.some(s => s.name === 'Docker');
+    
+    if (hasReact && hasNodeJS) {
+      points += 10;
+      feedback.push("⚡ Bonus: Modern JavaScript stack!");
+    }
+
+    if (hasDocker) {
+      points += 10;
+      feedback.push("🐳 Bonus: Containerization expertise!");
+    }
+
+    setScore(prev => prev + points);
+    setShowFeedback(true);
+    
+    return { points, feedback };
+  };
+
+  const nextChallenge = () => {
+    if (currentChallenge < challenges.length - 1) {
+      setCurrentChallenge(prev => prev + 1);
+      setSelectedSkills([]);
+      setAvailableSkills(skillsData);
+      setShowFeedback(false);
     } else {
       setGameComplete(true);
     }
@@ -161,21 +186,12 @@ const SkillsGame = () => {
 
   const resetGame = () => {
     setGameStarted(false);
-    setCurrentQuestion(0);
+    setCurrentChallenge(0);
+    setSelectedSkills([]);
+    setAvailableSkills(skillsData);
     setScore(0);
-    setStreak(0);
-    setSelectedAnswer(null);
-    setShowExplanation(false);
     setGameComplete(false);
-    setTimeLeft(30);
-  };
-
-  const getScoreMessage = () => {
-    const percentage = (score / (gameQuestions.length * 30)) * 100;
-    if (percentage >= 80) return "🏆 Excellent! You really know your stuff!";
-    if (percentage >= 60) return "🎉 Great job! Solid programming knowledge!";
-    if (percentage >= 40) return "👍 Good effort! Keep learning!";
-    return "💪 Nice try! Practice makes perfect!";
+    setShowFeedback(false);
   };
 
   if (!gameStarted) {
@@ -183,7 +199,7 @@ const SkillsGame = () => {
       <section className="skills-game-section">
         <div className="game-container">
           <TextReveal className="game-title" delay={0.2}>
-            Test My Skills! 🎮
+            Drag & Drop Skills Challenge! 🎯
           </TextReveal>
           <motion.div
             className="game-intro"
@@ -192,15 +208,30 @@ const SkillsGame = () => {
             transition={{ duration: 0.8, delay: 0.4 }}
             viewport={{ once: true }}
           >
-            <h3>Interactive Coding Challenge</h3>
-            <p>Think you can keep up? Test your programming knowledge with questions covering JavaScript, React, CSS, Node.js, and Python!</p>
+            <h3>Interactive Tech Stack Builder</h3>
+            <p>Drag and drop my skills to solve real-world development challenges! Build tech stacks, create solutions, and see how well you know modern development!</p>
             <div className="game-rules">
-              <div className="rule">⏱️ 30 seconds per question</div>
-              <div className="rule">🎯 Higher score for faster answers</div>
-              <div className="rule">🔥 Build streaks for bonus points</div>
+              <div className="rule">🎯 Complete 3 unique challenges</div>
+              <div className="rule">🔧 Drag skills to build solutions</div>
+              <div className="rule">⭐ Bonus points for smart combinations</div>
+            </div>
+            <div className="skills-preview">
+              <h4>Available Skills:</h4>
+              <div className="skills-categories">
+                {categories.map(category => (
+                  <div key={category.name} className="category-preview">
+                    <span className="category-name" style={{ color: category.color }}>
+                      {category.name}
+                    </span>
+                    <span className="category-count">
+                      {skillsData.filter(s => s.category === category.name).length} skills
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
             <AnimatedButton onClick={startGame} className="start-game-btn">
-              Start Challenge
+              Start Building! 🚀
             </AnimatedButton>
           </motion.div>
         </div>
@@ -209,6 +240,9 @@ const SkillsGame = () => {
   }
 
   if (gameComplete) {
+    const maxScore = challenges.length * 100;
+    const percentage = Math.round((score / maxScore) * 100);
+    
     return (
       <section className="skills-game-section">
         <div className="game-container">
@@ -221,21 +255,31 @@ const SkillsGame = () => {
             <h2>🎉 Challenge Complete!</h2>
             <div className="final-score">
               <div className="score-display">{score} Points</div>
-              <div className="score-message">{getScoreMessage()}</div>
+              <div className="score-percentage">{percentage}% Mastery</div>
+              <div className="score-message">
+                {percentage >= 80 ? "🏆 Tech Stack Master!" :
+                 percentage >= 60 ? "🎯 Solid Developer!" :
+                 percentage >= 40 ? "💪 Good Foundation!" :
+                 "🌱 Keep Learning!"}
+              </div>
             </div>
             <div className="game-stats">
               <div className="stat">
-                <span className="stat-value">{gameQuestions.filter((_, i) => i < gameQuestions.length).length}</span>
-                <span className="stat-label">Questions</span>
+                <span className="stat-value">{challenges.length}</span>
+                <span className="stat-label">Challenges</span>
               </div>
               <div className="stat">
-                <span className="stat-value">{Math.round((score / (gameQuestions.length * 30)) * 100)}%</span>
-                <span className="stat-label">Accuracy</span>
+                <span className="stat-value">{skillsData.length}</span>
+                <span className="stat-label">Skills Available</span>
+              </div>
+              <div className="stat">
+                <span className="stat-value">{categories.length}</span>
+                <span className="stat-label">Tech Categories</span>
               </div>
             </div>
             <div className="game-actions">
               <AnimatedButton onClick={resetGame} className="play-again-btn">
-                Play Again
+                Try Again
               </AnimatedButton>
               <AnimatedButton onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} variant="secondary">
                 Back to Portfolio
@@ -247,11 +291,10 @@ const SkillsGame = () => {
     );
   }
 
-  const question = gameQuestions[currentQuestion];
-  const isCorrect = selectedAnswer === question.correct;
+  const challenge = challenges[currentChallenge];
 
   return (
-    <section className="skills-game-section" ref={gameRef}>
+    <section className="skills-game-section">
       <div className="game-container">
         {/* Particles */}
         <AnimatePresence>
@@ -283,12 +326,12 @@ const SkillsGame = () => {
               <motion.div 
                 className="progress-fill"
                 initial={{ width: 0 }}
-                animate={{ width: `${((currentQuestion + 1) / gameQuestions.length) * 100}%` }}
+                animate={{ width: `${((currentChallenge + 1) / challenges.length) * 100}%` }}
                 transition={{ duration: 0.5 }}
               />
             </div>
             <span className="progress-text">
-              {currentQuestion + 1} / {gameQuestions.length}
+              Challenge {currentChallenge + 1} / {challenges.length}
             </span>
           </div>
           
@@ -306,95 +349,144 @@ const SkillsGame = () => {
               </motion.span>
             </div>
             <div className="stat-item">
-              <span className="stat-label">Streak</span>
-              <span className={`stat-value ${streak > 0 ? 'streak-active' : ''}`}>
-                {streak > 0 && '🔥'} {streak}
-              </span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-label">Time</span>
-              <motion.span 
-                className={`stat-value timer ${timeLeft <= 10 ? 'timer-warning' : ''}`}
-                animate={{ scale: timeLeft <= 10 ? [1, 1.1, 1] : 1 }}
-                transition={{ duration: 0.5, repeat: timeLeft <= 10 ? Infinity : 0 }}
-              >
-                {timeLeft}s
-              </motion.span>
+              <span className="stat-label">Selected</span>
+              <span className="stat-value">{selectedSkills.length}</span>
             </div>
           </div>
         </div>
 
-        {/* Question */}
+        {/* Challenge */}
         <motion.div
-          className="question-container"
-          key={currentQuestion}
+          className="challenge-container"
+          key={currentChallenge}
           initial={{ opacity: 0, x: 50 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <div className="skill-badge">{question.skill}</div>
-          <h3 className="question-text">{question.question}</h3>
-          
-          {question.code && (
-            <motion.div
-              className="code-block"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-            >
-              <pre><code>{question.code}</code></pre>
-            </motion.div>
-          )}
-
-          <div className="options-container">
-            {question.options.map((option, index) => (
-              <motion.button
-                key={index}
-                className={`option-btn ${
-                  selectedAnswer === index 
-                    ? isCorrect 
-                      ? 'correct' 
-                      : 'incorrect'
-                    : selectedAnswer !== null && index === question.correct
-                      ? 'correct-answer'
-                      : ''
-                }`}
-                onClick={() => handleAnswerSelect(index)}
-                disabled={selectedAnswer !== null}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: 0.3 + index * 0.1 }}
-                whileHover={selectedAnswer === null ? { scale: 1.02 } : {}}
-                whileTap={selectedAnswer === null ? { scale: 0.98 } : {}}
-              >
-                <span className="option-letter">{String.fromCharCode(65 + index)}</span>
-                <span className="option-text">{option}</span>
-                {selectedAnswer === index && (
-                  <motion.span
-                    className="option-icon"
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    {isCorrect ? '✓' : '✗'}
-                  </motion.span>
-                )}
-              </motion.button>
-            ))}
+          <div className="challenge-header">
+            <h2 className="challenge-title">{challenge.title}</h2>
+            <p className="challenge-description">{challenge.description}</p>
+            <div className="challenge-requirements">
+              <span className="requirement">
+                📋 Categories: {challenge.requiredCategories.join(', ')}
+              </span>
+              <span className="requirement">
+                🎯 Min Skills: {challenge.minSkills}
+              </span>
+              <span className="bonus-hint">💡 {challenge.bonus}</span>
+            </div>
           </div>
 
-          {showExplanation && (
+          {/* Drop Zone */}
+          <motion.div
+            ref={dropZoneRef}
+            className={`drop-zone ${selectedSkills.length > 0 ? 'has-skills' : ''}`}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            <div className="drop-zone-header">
+              <h3>Your Tech Stack</h3>
+              <span className="skills-count">{selectedSkills.length} skills selected</span>
+            </div>
+            
+            <div className="selected-skills">
+              <AnimatePresence>
+                {selectedSkills.map((skill, index) => (
+                  <motion.div
+                    key={skill.id}
+                    className="selected-skill"
+                    style={{ backgroundColor: skill.color + '20', borderColor: skill.color }}
+                    initial={{ opacity: 0, scale: 0, rotate: 180 }}
+                    animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                    exit={{ opacity: 0, scale: 0, rotate: -180 }}
+                    transition={{ duration: 0.3, delay: index * 0.05 }}
+                    whileHover={{ scale: 1.05, y: -5 }}
+                    onClick={() => removeSkill(skill.id)}
+                  >
+                    <span className="skill-icon">{skill.icon}</span>
+                    <span className="skill-name">{skill.name}</span>
+                    <span className="skill-category">{skill.category}</span>
+                    <button className="remove-skill">×</button>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+              
+              {selectedSkills.length === 0 && (
+                <div className="empty-drop-zone">
+                  <span className="drop-icon">🎯</span>
+                  <p>Drag skills here to build your solution!</p>
+                </div>
+              )}
+            </div>
+          </motion.div>
+
+          {/* Available Skills */}
+          <div className="skills-palette">
+            <h3>Available Skills</h3>
+            <div className="skills-by-category">
+              {categories.map(category => {
+                const categorySkills = availableSkills.filter(s => s.category === category.name);
+                if (categorySkills.length === 0) return null;
+                
+                return (
+                  <div key={category.name} className="skill-category">
+                    <div className="category-header">
+                      <h4 style={{ color: category.color }}>{category.name}</h4>
+                      <span className="category-description">{category.description}</span>
+                    </div>
+                    <div className="skills-grid">
+                      {categorySkills.map((skill, index) => (
+                        <DraggableSkill
+                          key={skill.id}
+                          skill={skill}
+                          onDrop={handleDrop}
+                          index={index}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="challenge-actions">
+            <AnimatedButton 
+              onClick={evaluateChallenge}
+              className="evaluate-btn"
+              disabled={selectedSkills.length === 0}
+            >
+              Evaluate Solution 🔍
+            </AnimatedButton>
+          </div>
+
+          {/* Feedback */}
+          {showFeedback && (
             <motion.div
-              className="explanation"
+              className="feedback-panel"
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               transition={{ duration: 0.5 }}
             >
-              <div className="explanation-content">
-                <h4>{isCorrect ? '🎉 Correct!' : '❌ Not quite!'}</h4>
-                <p>{question.explanation}</p>
-                <AnimatedButton onClick={nextQuestion} className="next-btn">
-                  {currentQuestion < gameQuestions.length - 1 ? 'Next Question' : 'Finish Game'}
+              <div className="feedback-content">
+                <h4>Challenge Results</h4>
+                <div className="feedback-list">
+                  {evaluateChallenge().feedback.map((item, index) => (
+                    <motion.div
+                      key={index}
+                      className="feedback-item"
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.3, delay: index * 0.1 }}
+                    >
+                      {item}
+                    </motion.div>
+                  ))}
+                </div>
+                <AnimatedButton onClick={nextChallenge} className="next-challenge-btn">
+                  {currentChallenge < challenges.length - 1 ? 'Next Challenge' : 'Finish Game'} →
                 </AnimatedButton>
               </div>
             </motion.div>
@@ -402,6 +494,55 @@ const SkillsGame = () => {
         </motion.div>
       </div>
     </section>
+  );
+};
+
+const DraggableSkill = ({ skill, onDrop, index }) => {
+  const dragControls = useDragControls();
+
+  return (
+    <motion.div
+      className="draggable-skill"
+      style={{ 
+        backgroundColor: skill.color + '15',
+        borderColor: skill.color,
+        color: skill.color
+      }}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3, delay: index * 0.05 }}
+      drag
+      dragControls={dragControls}
+      dragElastic={0.1}
+      dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
+      whileDrag={{ 
+        scale: 1.1, 
+        rotate: 5,
+        zIndex: 1000,
+        boxShadow: "0 10px 30px rgba(0,0,0,0.3)"
+      }}
+      whileHover={{ scale: 1.05, y: -3 }}
+      onDragEnd={(event, info) => {
+        const dropZone = document.querySelector('.drop-zone');
+        if (dropZone) {
+          const dropRect = dropZone.getBoundingClientRect();
+          const dragRect = event.target.getBoundingClientRect();
+          
+          if (
+            dragRect.left < dropRect.right &&
+            dragRect.right > dropRect.left &&
+            dragRect.top < dropRect.bottom &&
+            dragRect.bottom > dropRect.top
+          ) {
+            onDrop(skill);
+          }
+        }
+      }}
+    >
+      <span className="skill-icon">{skill.icon}</span>
+      <span className="skill-name">{skill.name}</span>
+      <span className="drag-hint">Drag me!</span>
+    </motion.div>
   );
 };
 
