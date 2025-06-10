@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import TextReveal from './TextReveal';
+import HoverDistortion from './HoverDistortion';
+import { AnimatedButton } from './MicroInteractions';
 
 const testimonials = [
   {
@@ -49,62 +52,79 @@ const TestimonialCarousel = () => {
   return (
     <section className="testimonial-section">
       <div className="testimonial-container">
-        <motion.h2
-          className="testimonial-title"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          viewport={{ once: true }}
-        >
+        <TextReveal className="testimonial-title" delay={0.2}>
           What People Say
-        </motion.h2>
+        </TextReveal>
         
         <div className="testimonial-carousel">
           <AnimatePresence mode="wait">
             <motion.div
               key={currentIndex}
-              className="testimonial-card"
-              initial={{ opacity: 0, x: 100 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -100 }}
-              transition={{ duration: 0.5 }}
+              initial={{ opacity: 0, x: 100, rotateY: 45 }}
+              animate={{ opacity: 1, x: 0, rotateY: 0 }}
+              exit={{ opacity: 0, x: -100, rotateY: -45 }}
+              transition={{ duration: 0.6, type: "spring", stiffness: 100 }}
             >
-              <div className="testimonial-content">
-                <p className="testimonial-text">"{testimonials[currentIndex].content}"</p>
-                <div className="testimonial-author">
-                  <img 
-                    src={testimonials[currentIndex].avatar} 
-                    alt={testimonials[currentIndex].name}
-                    className="author-avatar"
-                  />
-                  <div className="author-info">
-                    <h4 className="author-name">{testimonials[currentIndex].name}</h4>
-                    <p className="author-role">
-                      {testimonials[currentIndex].role} at {testimonials[currentIndex].company}
-                    </p>
-                  </div>
+              <HoverDistortion className="testimonial-card">
+                <div className="testimonial-content">
+                  <motion.p
+                    className="testimonial-text"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.2 }}
+                  >
+                    "{testimonials[currentIndex].content}"
+                  </motion.p>
+                  <motion.div
+                    className="testimonial-author"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.6, delay: 0.4 }}
+                  >
+                    <motion.img 
+                      src={testimonials[currentIndex].avatar} 
+                      alt={testimonials[currentIndex].name}
+                      className="author-avatar"
+                      whileHover={{ scale: 1.1, rotate: 5 }}
+                      transition={{ duration: 0.3 }}
+                    />
+                    <div className="author-info">
+                      <h4 className="author-name">{testimonials[currentIndex].name}</h4>
+                      <p className="author-role">
+                        {testimonials[currentIndex].role} at {testimonials[currentIndex].company}
+                      </p>
+                    </div>
+                  </motion.div>
                 </div>
-              </div>
+              </HoverDistortion>
             </motion.div>
           </AnimatePresence>
           
-          <div className="carousel-controls">
-            <button onClick={prevTestimonial} className="carousel-btn prev">
+          <motion.div
+            className="carousel-controls"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.6 }}
+            viewport={{ once: true }}
+          >
+            <AnimatedButton onClick={prevTestimonial} className="carousel-btn prev">
               ←
-            </button>
+            </AnimatedButton>
             <div className="carousel-dots">
               {testimonials.map((_, index) => (
-                <button
+                <motion.button
                   key={index}
                   className={`dot ${index === currentIndex ? 'active' : ''}`}
                   onClick={() => setCurrentIndex(index)}
+                  whileHover={{ scale: 1.2 }}
+                  whileTap={{ scale: 0.9 }}
                 />
               ))}
             </div>
-            <button onClick={nextTestimonial} className="carousel-btn next">
+            <AnimatedButton onClick={nextTestimonial} className="carousel-btn next">
               →
-            </button>
-          </div>
+            </AnimatedButton>
+          </motion.div>
         </div>
       </div>
     </section>

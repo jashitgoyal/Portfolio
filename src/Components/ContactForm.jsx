@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { AnimatedButton, AnimatedInput } from './MicroInteractions';
+import HoverDistortion from './HoverDistortion';
+import TextReveal from './TextReveal';
 
 const ContactForm = () => {
   const [formData, setFormData] = useState({
@@ -28,45 +31,52 @@ const ContactForm = () => {
   return (
     <section className="contact-section">
       <div className="contact-container">
-        <motion.div
-          className="contact-content"
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
-        >
-          <h2 className="contact-title">Let's Work Together</h2>
-          <p className="contact-subtitle">
+        <HoverDistortion className="contact-content">
+          <TextReveal className="contact-title" delay={0.2}>
+            Let's Work Together
+          </TextReveal>
+          <motion.p
+            className="contact-subtitle"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            viewport={{ once: true }}
+          >
             Have a project in mind? Let's discuss how we can bring your ideas to life.
-          </p>
+          </motion.p>
           
-          <form className="contact-form" onSubmit={handleSubmit}>
+          <motion.form
+            className="contact-form"
+            onSubmit={handleSubmit}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.6 }}
+            viewport={{ once: true }}
+          >
             <div className="form-group">
-              <input
+              <AnimatedInput
                 type="text"
                 name="name"
                 placeholder="Your Name"
                 value={formData.name}
                 onChange={handleChange}
                 required
-                className="form-input"
               />
             </div>
             
             <div className="form-group">
-              <input
+              <AnimatedInput
                 type="email"
                 name="email"
                 placeholder="Your Email"
                 value={formData.email}
                 onChange={handleChange}
                 required
-                className="form-input"
               />
             </div>
             
             <div className="form-group">
-              <textarea
+              <motion.textarea
                 name="message"
                 placeholder="Your Message"
                 value={formData.message}
@@ -74,24 +84,27 @@ const ContactForm = () => {
                 required
                 className="form-textarea"
                 rows="5"
+                whileFocus={{
+                  scale: 1.02,
+                  boxShadow: "0 0 0 3px rgba(0, 109, 119, 0.1)"
+                }}
+                transition={{ duration: 0.2 }}
               />
             </div>
             
-            <motion.button
+            <AnimatedButton
               type="submit"
               className="submit-button"
               disabled={isSubmitting}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
             >
               {isSubmitting ? (
                 <div className="loading-spinner"></div>
               ) : (
                 'Send Message'
               )}
-            </motion.button>
-          </form>
-        </motion.div>
+            </AnimatedButton>
+          </motion.form>
+        </HoverDistortion>
       </div>
     </section>
   );

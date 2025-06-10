@@ -1,5 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import TextReveal from './TextReveal';
+import HoverDistortion from './HoverDistortion';
 
 const timelineData = [
   {
@@ -36,33 +38,77 @@ const Timeline = () => {
   return (
     <section className="timeline-section">
       <div className="timeline-container">
-        <motion.h2
-          className="timeline-title"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          viewport={{ once: true }}
-        >
+        <TextReveal className="timeline-title" delay={0.2}>
           My Journey
-        </motion.h2>
+        </TextReveal>
         
         <div className="timeline">
           {timelineData.map((item, index) => (
             <motion.div
               key={index}
               className={`timeline-item ${item.type}`}
-              initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.2 }}
+              initial={{ opacity: 0, x: index % 2 === 0 ? -100 : 100, scale: 0.8 }}
+              whileInView={{ opacity: 1, x: 0, scale: 1 }}
+              transition={{ 
+                duration: 0.8, 
+                delay: index * 0.2,
+                type: "spring",
+                stiffness: 100
+              }}
               viewport={{ once: true }}
             >
-              <div className="timeline-content">
-                <div className="timeline-year">{item.year}</div>
-                <h3 className="timeline-item-title">{item.title}</h3>
-                <h4 className="timeline-company">{item.company}</h4>
-                <p className="timeline-description">{item.description}</p>
-              </div>
-              <div className="timeline-dot"></div>
+              <HoverDistortion>
+                <div className="timeline-content">
+                  <motion.div
+                    className="timeline-year"
+                    initial={{ scale: 0 }}
+                    whileInView={{ scale: 1 }}
+                    transition={{ duration: 0.5, delay: index * 0.2 + 0.3 }}
+                    viewport={{ once: true }}
+                  >
+                    {item.year}
+                  </motion.div>
+                  <motion.h3
+                    className="timeline-item-title"
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: index * 0.2 + 0.4 }}
+                    viewport={{ once: true }}
+                  >
+                    {item.title}
+                  </motion.h3>
+                  <motion.h4
+                    className="timeline-company"
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: index * 0.2 + 0.5 }}
+                    viewport={{ once: true }}
+                  >
+                    {item.company}
+                  </motion.h4>
+                  <motion.p
+                    className="timeline-description"
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: index * 0.2 + 0.6 }}
+                    viewport={{ once: true }}
+                  >
+                    {item.description}
+                  </motion.p>
+                </div>
+              </HoverDistortion>
+              <motion.div
+                className="timeline-dot"
+                initial={{ scale: 0 }}
+                whileInView={{ scale: 1 }}
+                transition={{ 
+                  duration: 0.5, 
+                  delay: index * 0.2 + 0.2,
+                  type: "spring",
+                  stiffness: 200
+                }}
+                viewport={{ once: true }}
+              />
             </motion.div>
           ))}
         </div>
