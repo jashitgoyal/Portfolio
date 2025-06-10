@@ -131,24 +131,6 @@ body {
   color: black;
 }
 
-/* Floating Elements */
-.floating-elements {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: -1;
-}
-
-.floating-element {
-  position: absolute;
-  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-  border-radius: 50%;
-  opacity: 0.1;
-}
-
 /* Skills CSS */
 /* Slider container */
 .slider {
@@ -287,42 +269,127 @@ body {
   font-size: 1rem;
 }
 
-/* Stats Counter */
+/* Enhanced Stats Counter */
 .stats-section {
-  padding: 100px 20px;
-  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  padding: 120px 20px;
+  background: linear-gradient(135deg, #006d77 0%, #83c5be 50%, #e29578 100%);
   color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.stats-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.1"/><circle cx="10" cy="90" r="0.5" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+  pointer-events: none;
 }
 
 .stats-container {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+.stats-title {
+  text-align: center;
+  font-size: 4rem;
+  margin-bottom: 80px;
+  background: linear-gradient(45deg, #ffffff, #ffddd2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 40px;
+  perspective: 1000px;
 }
 
 .stat-item {
   text-align: center;
-  padding: 30px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 20px;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 40px 30px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 25px;
+  backdrop-filter: blur(20px);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  position: relative;
+  overflow: hidden;
+  transform-style: preserve-3d;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.stat-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.6s ease;
+}
+
+.stat-item:hover::before {
+  left: 100%;
+}
+
+.stat-item:hover {
+  transform: translateY(-10px) rotateX(5deg);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.stat-icon {
+  font-size: 3rem;
+  margin-bottom: 20px;
+  display: block;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
 }
 
 .stat-number {
-  font-size: 4rem;
-  font-weight: bold;
-  margin-bottom: 10px;
+  font-size: 4.5rem;
+  font-weight: 900;
+  margin-bottom: 15px;
+  background: linear-gradient(45deg, #ffffff, #ffddd2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  line-height: 1;
 }
 
 .stat-label {
-  font-size: 1.2rem;
-  opacity: 0.9;
+  font-size: 1.3rem;
+  opacity: 0.95;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.stat-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100px;
+  height: 100px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.stat-item:hover .stat-glow {
+  opacity: 1;
 }
 
 /* Timeline */
@@ -750,10 +817,9 @@ body {
   }
 }
 
-/* Cursor Settings */
-
+/* Enhanced Cursor Settings */
 .cursor {
-  background-color: var(--secondary-color);
+  background: radial-gradient(circle, var(--secondary-color), var(--primary-color));
   height: 32px;
   width: 32px;
   border-radius: 50%;
@@ -761,29 +827,35 @@ body {
   top: 0;
   left: 0;
   pointer-events: none;
-  transition: width 0.2s ease, height 0.2s ease;
   z-index: 1000;
+  mix-blend-mode: difference;
+  transition: width 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+              height 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+              opacity 0.3s ease;
 }
 
 .cursor-hero {
   height: 120px;
   width: 120px;
   border-radius: 50%;
-  border: 2px solid var(--primary-color);
-  background-color: transparent;
+  border: 3px solid var(--primary-color);
+  background: radial-gradient(circle, rgba(0, 109, 119, 0.1), transparent);
   position: fixed;
   top: 0;
   left: 0;
   pointer-events: none;
-  transition: width 0.2s ease, height 0.2s ease;
   z-index: 1000;
+  backdrop-filter: blur(5px);
+  transition: width 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+              height 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+              opacity 0.3s ease;
 }
 
 .cursor-project {
   height: 80px;
   width: 80px;
   border-radius: 50%;
-  background-color: var(--primary-color);
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
   position: fixed;
   top: 0;
   left: 0;
@@ -792,63 +864,19 @@ body {
   align-items: center;
   color: white;
   font-size: 12px;
+  font-weight: bold;
   text-align: center;
   pointer-events: none;
-  transition: width 0.2s ease, height 0.2s ease;
   z-index: 1000;
+  box-shadow: 0 8px 32px rgba(0, 109, 119, 0.4);
+  transition: width 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+              height 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+              opacity 0.3s ease,
+              transform 0.3s ease;
 }
 
-/* Tech Stack Cube Styles */
-.tech-stack {
-  perspective: 1000px;
-  width: 200px;
-  height: 200px;
-  margin: 100px auto;
-  padding: 50px 0;
-  background: var(--background-color);
-}
-
-.cube {
-  width: 100%;
-  height: 100%;
-  position: relative;
-  transform-style: preserve-3d;
-  animation: rotate 20s infinite linear;
-}
-
-.cube:hover {
-  animation-play-state: paused;
-}
-
-.cube-face {
-  position: absolute;
-  width: 200px;
-  height: 200px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2em;
-  background: rgba(255, 255, 255, 0.9);
-  border: 2px solid var(--primary-color);
-  backdrop-filter: blur(5px);
-  transition: all 0.3s ease;
-}
-
-.cube-face:hover {
-  background: var(--primary-color);
-  color: white;
-}
-
-.front { transform: translateZ(100px); }
-.back { transform: translateZ(-100px) rotateY(180deg); }
-.right { transform: translateX(100px) rotateY(90deg); }
-.left { transform: translateX(-100px) rotateY(-90deg); }
-.top { transform: translateY(-100px) rotateX(90deg); }
-.bottom { transform: translateY(100px) rotateX(-90deg); }
-
-@keyframes rotate {
-  from { transform: rotateX(0) rotateY(0); }
-  to { transform: rotateX(360deg) rotateY(360deg); }
+.cursor-project:hover {
+  transform: scale(1.1);
 }
 
 /* Responsive Design */
@@ -873,6 +901,10 @@ body {
   }
   
   .stat-number {
+    font-size: 3rem;
+  }
+  
+  .stats-title {
     font-size: 2.5rem;
   }
   

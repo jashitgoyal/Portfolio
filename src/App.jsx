@@ -4,37 +4,46 @@ import Navbar from "./Components/navbar.jsx";
 import Projects from "./Components/projects.jsx";
 import AboutMe from "./Components/aboutme.jsx";
 import Skills from "./Components/skills.jsx";
-import TechStack from "./Components/TechStack.jsx";
 import StatsCounter from "./Components/StatsCounter.jsx";
 import Timeline from "./Components/Timeline.jsx";
 import TestimonialCarousel from "./Components/TestimonialCarousel.jsx";
 import ContactForm from "./Components/ContactForm.jsx";
-import FloatingElements from "./Components/FloatingElements.jsx";
 import { ReactLenis } from "lenis/react";
 import { useEffect, useState } from "react";
-import { motion, useSpring } from "framer-motion";
+import { motion, useMotionValue, useSpring } from "framer-motion";
 
 function App() {
-  const [mousePosition, setMousePosition] = useState({
-    x: 0,
-    y: 0,
-  });
-
-  const cursorX = useSpring(0, { damping: 10, stiffness: 500 }); // Increased stiffness even more
-  const cursorY = useSpring(0, { damping: 10, stiffness: 500 }); // Reduced damping for snappier response
-
   const [customCursor, setCustomCursor] = useState("cursor");
+  
+  // Use motion values for smoother cursor tracking
+  const cursorX = useMotionValue(0);
+  const cursorY = useMotionValue(0);
+  
+  // Apply spring physics for ultra-smooth movement
+  const springX = useSpring(cursorX, { 
+    damping: 25, 
+    stiffness: 700, 
+    mass: 0.5 
+  });
+  const springY = useSpring(cursorY, { 
+    damping: 25, 
+    stiffness: 700, 
+    mass: 0.5 
+  });
 
   useEffect(() => {
     const mousemove = (e) => {
       const { clientX, clientY } = e;
-      cursorX.set(clientX - (customCursor === "cursor" ? 16 : customCursor === "cursor-hero" ? 60 : 40));
-      cursorY.set(clientY - (customCursor === "cursor" ? 16 : customCursor === "cursor-hero" ? 60 : 40));
+      const offsetX = customCursor === "cursor" ? 16 : customCursor === "cursor-hero" ? 60 : 40;
+      const offsetY = customCursor === "cursor" ? 16 : customCursor === "cursor-hero" ? 60 : 40;
+      
+      cursorX.set(clientX - offsetX);
+      cursorY.set(clientY - offsetY);
     };
 
     window.addEventListener("mousemove", mousemove);
     return () => window.removeEventListener("mousemove", mousemove);
-  }, [customCursor]);
+  }, [customCursor, cursorX, cursorY]);
 
   const textEnter = (cursor) => {
     setCustomCursor(cursor);
@@ -46,7 +55,6 @@ function App() {
 
   return (
     <ReactLenis root>
-      <FloatingElements />
       <Navbar />
       <Hero
         onPointerEnter={() => textEnter("cursor-hero")}
@@ -58,7 +66,6 @@ function App() {
         onPointerEnter={() => textEnter("cursor-project")}
         onPointerLeave={textLeave}
       />
-      <TechStack />
       <Timeline />
       <TestimonialCarousel />
       <AboutMe />
@@ -66,8 +73,14 @@ function App() {
       <motion.div
         className={customCursor}
         style={{
-          x: cursorX,
-          y: cursorY,
+          x: springX,
+          y: springY,
+        }}
+        transition={{
+          type: "spring",
+          damping: 25,
+          stiffness: 700,
+          mass: 0.5
         }}
       >
         {customCursor === "cursor-project" && "Go to Project"}
