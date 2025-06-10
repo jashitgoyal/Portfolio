@@ -5,6 +5,11 @@ import Projects from "./Components/projects.jsx";
 import AboutMe from "./Components/aboutme.jsx";
 import Skills from "./Components/skills.jsx";
 import TechStack from "./Components/TechStack.jsx";
+import StatsCounter from "./Components/StatsCounter.jsx";
+import Timeline from "./Components/Timeline.jsx";
+import TestimonialCarousel from "./Components/TestimonialCarousel.jsx";
+import ContactForm from "./Components/ContactForm.jsx";
+import FloatingElements from "./Components/FloatingElements.jsx";
 import { ReactLenis } from "lenis/react";
 import { useEffect, useState } from "react";
 import { motion, useSpring } from "framer-motion";
@@ -41,18 +46,23 @@ function App() {
 
   return (
     <ReactLenis root>
+      <FloatingElements />
       <Navbar />
       <Hero
         onPointerEnter={() => textEnter("cursor-hero")}
         onPointerLeave={textLeave}
       />
       <Skills />
+      <StatsCounter />
       <Projects
         onPointerEnter={() => textEnter("cursor-project")}
         onPointerLeave={textLeave}
       />
       <TechStack />
+      <Timeline />
+      <TestimonialCarousel />
       <AboutMe />
+      <ContactForm />
       <motion.div
         className={customCursor}
         style={{
