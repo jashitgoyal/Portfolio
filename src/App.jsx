@@ -4,6 +4,7 @@ import Navbar from "./Components/navbar.jsx";
 import Projects from "./Components/projects.jsx";
 import AboutMe from "./Components/aboutme.jsx";
 import InteractiveSkillBars from "./Components/InteractiveSkillBars.jsx";
+import SkillsGame from "./Components/SkillsGame.jsx";
 import Timeline from "./Components/Timeline.jsx";
 import TestimonialCarousel from "./Components/TestimonialCarousel.jsx";
 import ContactForm from "./Components/ContactForm.jsx";
@@ -75,25 +76,29 @@ function App() {
         </SectionTransition>
         
         <SectionTransition delay={0.3}>
+          <SkillsGame />
+        </SectionTransition>
+        
+        <SectionTransition delay={0.4}>
           <Projects
             onPointerEnter={() => textEnter("cursor-project")}
             onPointerLeave={textLeave}
           />
         </SectionTransition>
         
-        <SectionTransition delay={0.4}>
+        <SectionTransition delay={0.5}>
           <Timeline />
         </SectionTransition>
         
-        <SectionTransition delay={0.5}>
+        <SectionTransition delay={0.6}>
           <TestimonialCarousel />
         </SectionTransition>
         
-        <SectionTransition delay={0.6}>
+        <SectionTransition delay={0.7}>
           <AboutMe />
         </SectionTransition>
         
-        <SectionTransition delay={0.7}>
+        <SectionTransition delay={0.8}>
           <ContactForm />
         </SectionTransition>
         
